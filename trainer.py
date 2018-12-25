@@ -33,6 +33,7 @@ class Trainer(nn.Module):
             self.globalD.to(self.device_ids[0])
 
     def forward(self, x, bboxes, masks, ground_truth):
+        self.train()
         losses = {}
 
         x1, x2, offset_flow = self.netG(x, masks)
@@ -108,10 +109,13 @@ class Trainer(nn.Module):
 
         return gradient_penalty
 
-    def inference(self, input_a, input_b):
+    def inference(self, x, masks, ground_truth):
         self.eval()
-        # encode
-        pass
+        x1, x2, offset_flow = self.netG(x, masks)
+        # x1_inpaint = x1 * masks + ground_truth * (1. - masks)
+        x2_inpaint = x2 * masks + ground_truth * (1. - masks)
+
+        return x2_inpaint
 
     def save_model(self, checkpoint_dir, iteration):
         # Save generators, discriminators, and optimizers
