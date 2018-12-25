@@ -88,7 +88,7 @@ def extract_image_patches(images, ksizes, strides, padding='same'):
     return patches
 
 
-def random_bbox(config):
+def random_bbox(config, batch_size):
     """Generate a random tlhw with configuration.
 
     Args:
@@ -108,9 +108,9 @@ def random_bbox(config):
         t = np.random.randint(margin_height, maxt)
         l = np.random.randint(margin_width, maxl)
         bbox_list.append((t, l, h, w))
-        bbox_list = bbox_list * config['batch_size']
+        bbox_list = bbox_list * batch_size
     else:
-        for i in range(config['batch_size']):
+        for i in range(batch_size):
             t = np.random.randint(margin_height, maxt)
             l = np.random.randint(margin_width, maxl)
             bbox_list.append((t, l, h, w))

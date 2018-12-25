@@ -90,7 +90,7 @@ def main():
             trainer_module = trainer
 
         # Get the resume iteration to restart training
-        start_iteration = trainer_module.resume(checkpoint_path) if config['resume'] else 1
+        start_iteration = trainer_module.resume(config['resume']) if config['resume'] else 1
 
         iterable_train_loader = iter(train_loader)
 
@@ -104,7 +104,7 @@ def main():
                 ground_truth = iterable_train_loader.next()
 
             # Prepare the inputs
-            bboxes = random_bbox(config)
+            bboxes = random_bbox(config, batch_size=ground_truth.size(0))
             x, mask = mask_image(ground_truth, bboxes, config)
             if cuda:
                 x = x.cuda()
