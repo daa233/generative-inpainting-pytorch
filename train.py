@@ -42,7 +42,7 @@ def main():
         os.makedirs(checkpoint_path)
     shutil.copy(args.config, os.path.join(checkpoint_path, os.path.basename(args.config)))
     writer = SummaryWriter(log_dir=checkpoint_path)
-    logger = get_logger(checkpoint_path)
+    logger = get_logger(checkpoint_path)    # get logger and configure it at the first call
 
     logger.info(f"Arguments: {args}")
     # Set random seed
