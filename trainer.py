@@ -38,8 +38,8 @@ class Trainer(nn.Module):
 
         x1, x2, offset_flow = self.netG(x, masks)
         local_patch_gt = local_patch(ground_truth, bboxes)
-        x1_inpaint = x1 * masks + ground_truth * (1. - masks)
-        x2_inpaint = x2 * masks + ground_truth * (1. - masks)
+        x1_inpaint = x1 * masks + x * (1. - masks)
+        x2_inpaint = x2 * masks + x * (1. - masks)
         local_patch_x1_inpaint = local_patch(x1_inpaint, bboxes)
         local_patch_x2_inpaint = local_patch(x2_inpaint, bboxes)
 
@@ -109,13 +109,13 @@ class Trainer(nn.Module):
 
         return gradient_penalty
 
-    def inference(self, x, masks, ground_truth):
+    def inference(self, x, masks):
         self.eval()
         x1, x2, offset_flow = self.netG(x, masks)
-        # x1_inpaint = x1 * masks + ground_truth * (1. - masks)
-        x2_inpaint = x2 * masks + ground_truth * (1. - masks)
+        # x1_inpaint = x1 * masks + x * (1. - masks)
+        x2_inpaint = x2 * masks + x * (1. - masks)
 
-        return x2_inpaint
+        return x2_inpaint, offset_flow
 
     def save_model(self, checkpoint_dir, iteration):
         # Save generators, discriminators, and optimizers
@@ -143,6 +143,7 @@ class Trainer(nn.Module):
             self.optimizer_d.load_state_dict(state_dict['dis'])
             self.optimizer_g.load_state_dict(state_dict['gen'])
 
-        logger.info('Resume from iteration %d' % iteration)
+        print("Resume from {} at iteration {}".format(checkpoint_dir, iteration))
+        logger.info("Resume from {} at iteration {}".format(checkpoint_dir, iteration))
 
         return iteration
