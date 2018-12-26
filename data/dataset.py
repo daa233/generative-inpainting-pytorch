@@ -8,7 +8,7 @@ import torchvision.transforms as transforms
 
 
 class Dataset(data.Dataset):
-    def __init__(self, data_path, image_shape, with_subfolder=False, random_crop=True):
+    def __init__(self, data_path, image_shape, with_subfolder=False, random_crop=True, return_name=False):
         super(Dataset, self).__init__()
         if with_subfolder:
             self.samples = self._find_samples_in_subfolders(data_path)
@@ -17,6 +17,7 @@ class Dataset(data.Dataset):
         self.data_path = data_path
         self.image_shape = image_shape[:-1]
         self.random_crop = random_crop
+        self.return_name = return_name
 
     def __getitem__(self, index):
         path = os.path.join(self.data_path, self.samples[index])
@@ -34,7 +35,10 @@ class Dataset(data.Dataset):
         img = transforms.ToTensor()(img)  # turn the image to a tensor
         img = normalize(img)
 
-        return img
+        if self.return_name:
+            return self.samples[index], img
+        else:
+            return img
 
     def _find_samples_in_subfolders(self, dir):
         """
