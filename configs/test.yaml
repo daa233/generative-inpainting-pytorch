@@ -1,0 +1,48 @@
+# data parameters
+dataset_name: imagenet
+data_with_subfolder: True
+train_data_path: /media/ouc/4T_B/DuAngAng/datasets/ImageNet/ILSVRC2012_img_train/
+val_data_path:
+resume:
+batch_size: 48
+image_shape: [256, 256, 3]
+mask_shape: [128, 128]
+mask_batch_same: True
+max_delta_shape: [32, 32]
+margin: [0, 0]
+discounted_mask: True
+spatial_discounting_gamma: 0.9
+random_crop: True
+mask_type: hole     # hole | mosaic
+mosaic_unit_size: 12
+
+# training parameters
+expname: benchmark
+cuda: True
+gpu_ids: [0, 1, 2]    # set the GPU ids to use, e.g. [0] or [1, 2]
+num_workers: 4
+lr: 0.0001
+beta1: 0.5
+beta2: 0.9
+niter: 500000
+print_iter: 100
+viz_iter: 1000
+viz_max_out: 16
+snapshot_save_iter: 5000
+
+# loss weight
+coarse_l1_alpha: 1.2
+l1_loss_alpha: 1.2
+ae_loss_alpha: 1.2
+global_wgan_loss_alpha: 1.
+gan_loss_alpha: 0.001
+wgan_gp_lambda: 10
+
+# network parameters
+netG:
+  input_dim: 5
+  ngf: 32
+
+netD:
+  input_dim: 3
+  ndf: 64
