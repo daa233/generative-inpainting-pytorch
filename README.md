@@ -8,7 +8,7 @@ Converted TF model: [[Link](https://drive.google.com/file/d/1vz2Qp12_iwOiuvLWspL
 ## Inpainting Example:
 
 ```bash
-python test.py \
+python test_tf_model.py \
 	--image examples/imagenet/imagenet_patches_ILSVRC2012_val_00008210_input.png \
 	--mask examples/center_mask_256.png \
 	--output examples/output.png \
