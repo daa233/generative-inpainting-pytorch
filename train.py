@@ -168,7 +168,7 @@ def main():
 
     except Exception as e:  # for unexpected error logging
         logger.error(f"{e}")
-        exit(-1)
+        raise e
 
 
 if __name__ == '__main__':

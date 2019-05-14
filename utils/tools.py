@@ -36,25 +36,26 @@ def tensor_img_to_npimg(tensor_img):
 def normalize(x):
     return x.mul_(2).add_(-1)
 
-
-def same_padding(images, ksizes, strides):
-    batch_size, channel, height, width = images.size()
-    output_height = int(np.ceil(float(height) / strides[0]))
-    output_width = int(np.ceil(float(width) / strides[1]))
-    # Compute the height and width after padding
-    height_with_padding = output_height * strides[0] + ksizes[0] - 1
-    width_with_padding = output_width * strides[1] + ksizes[1] - 1
+def same_padding(images, ksizes, strides, rates):
+    assert len(images.size()) == 4
+    batch_size, channel, rows, cols = images.size()
+    out_rows = (rows + strides[0] - 1) // strides[0]
+    out_cols = (cols + strides[1] - 1) // strides[1]
+    effective_k_row = (ksizes[0] - 1) * rates[0] + 1
+    effective_k_col = (ksizes[1] - 1) * rates[1] + 1
+    padding_rows = max(0, (out_rows-1)*strides[0]+effective_k_row-rows)
+    padding_cols = max(0, (out_cols-1)*strides[1]+effective_k_col-cols)
     # Pad the input
-    padding_top = int((height_with_padding - height) / 2.)
-    padding_left = int((width_with_padding - width) / 2.)
-    padding_bottom = height_with_padding - height - padding_top
-    padding_right = width_with_padding - width - padding_left
-    images = torch.nn.ZeroPad2d((padding_left, padding_right,
-                                 padding_top, padding_bottom))(images)
+    padding_top = int(padding_rows / 2.)
+    padding_left = int(padding_cols / 2.)
+    padding_bottom = padding_rows - padding_top
+    padding_right = padding_cols - padding_left
+    paddings = (padding_left, padding_right, padding_top, padding_bottom)
+    images = torch.nn.ZeroPad2d(paddings)(images)
     return images
 
 
-def extract_image_patches(images, ksizes, strides, padding='same'):
+def extract_image_patches(images, ksizes, strides, rates, padding='same'):
     """
     Extract patches from images and put them in the C output dimension.
     :param padding:
@@ -62,6 +63,7 @@ def extract_image_patches(images, ksizes, strides, padding='same'):
     :param ksizes: [ksize_rows, ksize_cols]. The size of the sliding window for
      each dimension of images
     :param strides: [stride_rows, stride_cols]
+    :param rates: [dilation_rows, dilation_cols]
     :return: A Tensor
     """
     assert len(images.size()) == 4
@@ -69,23 +71,19 @@ def extract_image_patches(images, ksizes, strides, padding='same'):
     batch_size, channel, height, width = images.size()
 
     if padding == 'same':
-        # output_height = int(np.ceil(float(height)/strides[0]))
-        # output_width = int(np.ceil(float(width)/strides[1]))
-        images = same_padding(images, ksizes, strides)
+        images = same_padding(images, ksizes, strides, rates)
     elif padding == 'valid':
-        # output_height = int(np.ceil(float(height-ksizes[0]+1)/strides[0]))
-        # output_width = int(np.ceil(float(width-ksizes[1]+1)/strides[1]))
         pass
     else:
         raise NotImplementedError('Unsupported padding type: {}.\
                 Only "same" or "valid" are supported.'.format(padding))
 
-    patches = images.unfold(2, ksizes[0], strides[0]) \
-        .unfold(3, ksizes[1], strides[1])
-    patches = patches.contiguous().view(batch_size, channel, -1, ksizes[0], ksizes[1])
-    patches = patches.permute(0, 2, 1, 3, 4).contiguous()
-
-    return patches
+    unfold = torch.nn.Unfold(kernel_size=ksizes,
+                             dilation=rates,
+                             padding=0,
+                             stride=strides)
+    patches = unfold(images)
+    return patches  # [N, C*k*k, L], L is the total number of such blocks
 
 
 def random_bbox(config, batch_size):
@@ -211,26 +209,26 @@ def spatial_discounting_mask(config):
     return spatial_discounting_mask_tensor
 
 
-def reduce_mean(x, axis=None, keepdim=True):
+def reduce_mean(x, axis=None, keepdim=False):
     if not axis:
         axis = range(len(x.shape))
-    for i in axis:
+    for i in sorted(axis, reverse=True):
         x = torch.mean(x, dim=i, keepdim=keepdim)
     return x
 
 
-def reduce_std(x, axis=None, keepdim=True):
+def reduce_std(x, axis=None, keepdim=False):
     if not axis:
         axis = range(len(x.shape))
-    for i in axis:
+    for i in sorted(axis, reverse=True):
         x = torch.std(x, dim=i, keepdim=keepdim)
     return x
 
 
-def reduce_sum(x, axis=None, keepdim=True):
+def reduce_sum(x, axis=None, keepdim=False):
     if not axis:
         axis = range(len(x.shape))
-    for i in axis:
+    for i in sorted(axis, reverse=True):
         x = torch.sum(x, dim=i, keepdim=keepdim)
     return x
 
