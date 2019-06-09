@@ -1,6 +1,13 @@
 # generative-inpainting-pytorch
-A PyTorch reimplementation for paper Generative Image Inpainting with Contextual Attention (https://arxiv.org/abs/1801.07892)
+A PyTorch reimplementation for the paper [Generative Image Inpainting with Contextual Attention](https://arxiv.org/abs/1801.07892) according to the author's [TensorFlow implementation](https://github.com/JiahuiYu/generative_inpainting).
 
+## Prerequisites
+This code has been tested on Ubuntu 14.04 and the following are the main components that need to be installed:
+- Python3
+- PyTorch 1.0.0
+- torchvision 0.2.0
+- tensorboardX
+- pyyaml
 
 ## Train the model
 ```bash
