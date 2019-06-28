@@ -19,6 +19,8 @@ The checkpoints and logs will be saved to `checkpoints`。
 ## Test with the trained model
 By default, it will load the latest saved model in the checkpoints. You can also use `--iter` to choose the saved models by iteration.
 
+Trained PyTorch model: [[Google Drive](https://drive.google.com/drive/folders/1FHlDG94O8sH-sOOpkJBQmxCTicr1gc-C?usp=sharing)] [[Baidu Wangpan](https://pan.baidu.com/s/1c2xWhBIfyz0zttHP6lVR6w)]
+
 ```bash
 python test_single.py \
 	--image examples/imagenet/imagenet_patches_ILSVRC2012_val_00008210_input.png \
@@ -27,7 +29,7 @@ python test_single.py \
 ```
 
 ## Test with the converted TF model:
-Converted TF model: [[Link](https://drive.google.com/file/d/1vz2Qp12_iwOiuvLWspLHrC1UIuhSLojx/view?usp=sharing)]
+Converted TF model: [[Google Drive](https://drive.google.com/file/d/1vz2Qp12_iwOiuvLWspLHrC1UIuhSLojx/view?usp=sharing)]
 
 ```bash
 python test_tf_model.py \
