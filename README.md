@@ -19,13 +19,17 @@ The checkpoints and logs will be saved to `checkpoints`。
 ## Test with the trained model
 By default, it will load the latest saved model in the checkpoints. You can also use `--iter` to choose the saved models by iteration.
 
-Trained PyTorch model: [[Google Drive](https://drive.google.com/drive/folders/1FHlDG94O8sH-sOOpkJBQmxCTicr1gc-C?usp=sharing)] [[Baidu Wangpan](https://pan.baidu.com/s/1c2xWhBIfyz0zttHP6lVR6w)]
+Trained PyTorch model: ~~[[Google Drive](https://drive.google.com/drive/folders/1FHlDG94O8sH-sOOpkJBQmxCTicr1gc-C?usp=sharing)] [[Baidu Wangpan](https://pan.baidu.com/s/1c2xWhBIfyz0zttHP6lVR6w)]~~
+
+(Note: The PyTorch model was trained on a bug version whose some channel numbers are wrong. To load the model, you need
+to change the channel numbers according to [here](https://github.com/DAA233/generative-inpainting-pytorch/pull/2/commits/12f49c441edcdf585905f1758f6b5a2f14cb8d86#diff-584f4b3ab12058252e96596e3fd01fffL102).
+The links will be updated after the model is trained from scratch again.)
 
 ```bash
 python test_single.py \
 	--image examples/imagenet/imagenet_patches_ILSVRC2012_val_00008210_input.png \
 	--mask examples/center_mask_256.png \
-	--output examples/output.png \
+	--output examples/output.png
 ```
 
 ## Test with the converted TF model:
