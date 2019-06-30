@@ -20,7 +20,6 @@ parser.add_argument('--image', type=str)
 parser.add_argument('--mask', type=str, default='')
 parser.add_argument('--output', type=str, default='output.png')
 parser.add_argument('--flow', type=str, default='')
-parser.add_argument('--gpu_ids', type=str, default='2')
 parser.add_argument('--checkpoint_path', type=str, default='')
 parser.add_argument('--iter', type=int, default=0)
 
