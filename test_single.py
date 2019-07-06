@@ -29,7 +29,7 @@ def main():
 
     # CUDA configuration
     cuda = config['cuda']
-    device_ids = [int(i.strip()) for i in args.gpu_ids.split(',')]
+    device_ids = config['gpu_ids']
     if cuda:
         os.environ['CUDA_VISIBLE_DEVICES'] = ','.join(str(i) for i in device_ids)
         device_ids = list(range(len(device_ids)))
