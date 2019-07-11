@@ -19,11 +19,7 @@ The checkpoints and logs will be saved to `checkpoints`。
 ## Test with the trained model
 By default, it will load the latest saved model in the checkpoints. You can also use `--iter` to choose the saved models by iteration.
 
-Trained PyTorch model: ~~[[Google Drive](https://drive.google.com/drive/folders/1FHlDG94O8sH-sOOpkJBQmxCTicr1gc-C?usp=sharing)] [[Baidu Wangpan](https://pan.baidu.com/s/1c2xWhBIfyz0zttHP6lVR6w)]~~
-
-(Note: The PyTorch model was trained on a bug version whose some channel numbers are wrong. To load the model, you need
-to change the channel numbers according to [here](https://github.com/DAA233/generative-inpainting-pytorch/pull/2/commits/12f49c441edcdf585905f1758f6b5a2f14cb8d86#diff-584f4b3ab12058252e96596e3fd01fffL102).
-The links will be updated after the model is trained from scratch again.)
+Trained PyTorch model: [[Google Drive](https://drive.google.com/open?id=1qbfA5BP9yzdTFFmiOTvYARUYgW1zwBBK)] [[Baidu Wangpan](https://pan.baidu.com/s/17HzpiqMPLIznvCWBfpNVGw)]
 
 ```bash
 python test_single.py \
@@ -45,7 +41,7 @@ python test_tf_model.py \
 
 ## Test results on ImageNet validation set patches
 
-With PyTorch, the model was trained on ImageNet for 50k iterations to converge (about 120h). Here are some test results on the patches from ImageNet validation set.
+With PyTorch, the model was trained on ImageNet for 430k iterations to converge (with batch_size 48, about 150h). Here are some test results on the patches from ImageNet validation set.
 
 | Input | Inpainted |
 |:---:|:---:|
