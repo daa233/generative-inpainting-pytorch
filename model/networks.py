@@ -34,7 +34,7 @@ class CoarseGenerator(nn.Module):
         self.use_cuda = use_cuda
         self.device_ids = device_ids
 
-        self.conv1 = gen_conv(input_dim, cnum, 5, 1, 2)
+        self.conv1 = gen_conv(input_dim + 2, cnum, 5, 1, 2)
         self.conv2_downsample = gen_conv(cnum, cnum*2, 3, 2, 1)
         self.conv3 = gen_conv(cnum*2, cnum*2, 3, 1, 1)
         self.conv4_downsample = gen_conv(cnum*2, cnum*4, 3, 2, 1)
@@ -53,7 +53,7 @@ class CoarseGenerator(nn.Module):
         self.conv14 = gen_conv(cnum*2, cnum*2, 3, 1, 1)
         self.conv15 = gen_conv(cnum*2, cnum, 3, 1, 1)
         self.conv16 = gen_conv(cnum, cnum//2, 3, 1, 1)
-        self.conv17 = gen_conv(cnum//2, 3, 3, 1, 1, activation='none')
+        self.conv17 = gen_conv(cnum//2, input_dim, 3, 1, 1, activation='none')
 
     def forward(self, x, mask):
         # For indicating the boundaries of images
@@ -98,7 +98,7 @@ class FineGenerator(nn.Module):
         self.device_ids = device_ids
 
         # 3 x 256 x 256
-        self.conv1 = gen_conv(input_dim, cnum, 5, 1, 2)
+        self.conv1 = gen_conv(input_dim + 2, cnum, 5, 1, 2)
         self.conv2_downsample = gen_conv(cnum, cnum, 3, 2, 1)
         # cnum*2 x 128 x 128
         self.conv3 = gen_conv(cnum, cnum*2, 3, 1, 1)
@@ -114,7 +114,7 @@ class FineGenerator(nn.Module):
 
         # attention branch
         # 3 x 256 x 256
-        self.pmconv1 = gen_conv(input_dim, cnum, 5, 1, 2)
+        self.pmconv1 = gen_conv(input_dim + 2, cnum, 5, 1, 2)
         self.pmconv2_downsample = gen_conv(cnum, cnum, 3, 2, 1)
         # cnum*2 x 128 x 128
         self.pmconv3 = gen_conv(cnum, cnum*2, 3, 1, 1)
@@ -132,7 +132,7 @@ class FineGenerator(nn.Module):
         self.allconv14 = gen_conv(cnum*2, cnum*2, 3, 1, 1)
         self.allconv15 = gen_conv(cnum*2, cnum, 3, 1, 1)
         self.allconv16 = gen_conv(cnum, cnum//2, 3, 1, 1)
-        self.allconv17 = gen_conv(cnum//2, 3, 3, 1, 1, activation='none')
+        self.allconv17 = gen_conv(cnum//2, input_dim, 3, 1, 1, activation='none')
 
     def forward(self, xin, x_stage1, mask):
         x1_inpaint = x_stage1 * mask + xin * (1. - mask)
