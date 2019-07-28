@@ -24,6 +24,7 @@ num_workers: 4
 lr: 0.0001
 beta1: 0.5
 beta2: 0.9
+n_critic: 5
 niter: 500000
 print_iter: 100
 viz_iter: 1000

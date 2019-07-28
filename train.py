@@ -41,25 +41,25 @@ def main():
     if not os.path.exists(checkpoint_path):
         os.makedirs(checkpoint_path)
     shutil.copy(args.config, os.path.join(checkpoint_path, os.path.basename(args.config)))
-    writer = SummaryWriter(log_dir=checkpoint_path)
+    writer = SummaryWriter(logdir=checkpoint_path)
     logger = get_logger(checkpoint_path)    # get logger and configure it at the first call
 
-    logger.info(f"Arguments: {args}")
+    logger.info("Arguments: {}".format(args))
     # Set random seed
     if args.seed is None:
         args.seed = random.randint(1, 10000)
-    logger.info(f"Random seed: {args.seed}")
+    logger.info("Random seed: {}".format(args.seed))
     random.seed(args.seed)
     torch.manual_seed(args.seed)
     if cuda:
         torch.cuda.manual_seed_all(args.seed)
 
     # Log the configuration
-    logger.info(f"Configuration: {config}")
+    logger.info("Configuration: {}".format(config))
 
     try:  # for unexpected error logging
         # Load the dataset
-        logger.info(f"Training on dataset: {config['dataset_name']}")
+        logger.info("Training on dataset: {}".format(config['dataset_name']))
         train_dataset = Dataset(data_path=config['train_data_path'],
                                 with_subfolder=config['data_with_subfolder'],
                                 image_shape=config['image_shape'],
@@ -79,9 +79,9 @@ def main():
 
         # Define the trainer
         trainer = Trainer(config)
-        logger.info(f"\n{trainer.netG}")
-        logger.info(f"\n{trainer.localD}")
-        logger.info(f"\n{trainer.globalD}")
+        logger.info("\n{}".format(trainer.netG))
+        logger.info("\n{}".format(trainer.localD))
+        logger.info("\n{}".format(trainer.globalD))
 
         if cuda:
             trainer = nn.parallel.DataParallel(trainer, device_ids=device_ids)
@@ -98,10 +98,10 @@ def main():
 
         for iteration in range(start_iteration, config['niter'] + 1):
             try:
-                ground_truth = iterable_train_loader.next()
+                ground_truth = next(iterable_train_loader)
             except StopIteration:
                 iterable_train_loader = iter(train_loader)
-                ground_truth = iterable_train_loader.next()
+                ground_truth = next(iterable_train_loader)
 
             # Prepare the inputs
             bboxes = random_bbox(config, batch_size=ground_truth.size(0))
@@ -112,7 +112,8 @@ def main():
                 ground_truth = ground_truth.cuda()
 
             ###### Forward pass ######
-            losses, inpainted_result, offset_flow = trainer(x, bboxes, mask, ground_truth)
+            compute_g_loss = iteration % config['n_critic'] == 0
+            losses, inpainted_result, offset_flow = trainer(x, bboxes, mask, ground_truth, compute_g_loss)
             # Scalars from different devices are gathered into vectors
             for k in losses.keys():
                 if not losses[k].dim() == 0:
@@ -126,12 +127,13 @@ def main():
             trainer_module.optimizer_d.step()
 
             # Update G
-            trainer_module.optimizer_g.zero_grad()
-            losses['g'] = losses['l1'] * config['l1_loss_alpha'] \
-                          + losses['ae'] * config['ae_loss_alpha'] \
-                          + losses['wgan_g'] * config['gan_loss_alpha']
-            losses['g'].backward()
-            trainer_module.optimizer_g.step()
+            if compute_g_loss:
+                trainer_module.optimizer_g.zero_grad()
+                losses['g'] = losses['l1'] * config['l1_loss_alpha'] \
+                              + losses['ae'] * config['ae_loss_alpha'] \
+                              + losses['wgan_g'] * config['gan_loss_alpha']
+                losses['g'].backward()
+                trainer_module.optimizer_g.step()
 
             # Log and visualization
             log_losses = ['l1', 'ae', 'wgan_g', 'wgan_d', 'wgan_gp', 'g', 'd']
@@ -143,7 +145,7 @@ def main():
 
                 message = 'Iter: [%d/%d] ' % (iteration, config['niter'])
                 for k in log_losses:
-                    v = losses[k]
+                    v = losses.get(k, 0.)
                     writer.add_scalar(k, v, iteration)
                     message += '%s: %.6f ' % (k, v)
                 message += speed_msg
@@ -167,7 +169,7 @@ def main():
                 trainer_module.save_model(checkpoint_path, iteration)
 
     except Exception as e:  # for unexpected error logging
-        logger.error(f"{e}")
+        logger.error("{}".format(e))
         raise e
 
 
