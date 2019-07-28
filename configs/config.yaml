@@ -41,7 +41,7 @@ wgan_gp_lambda: 10
 
 # network parameters
 netG:
-  input_dim: 5
+  input_dim: 3
   ngf: 32
 
 netD:
