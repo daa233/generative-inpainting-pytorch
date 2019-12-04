@@ -1,7 +1,7 @@
 # data parameters
 dataset_name: imagenet
 data_with_subfolder: True
-train_data_path: /media/ouc/4T_B/DuAngAng/datasets/ImageNet/ILSVRC2012_img_train/
+train_data_path: /media/ouc/4T_A/datasets/ImageNet/ILSVRC2012_img_train/
 val_data_path:
 resume:
 batch_size: 48
