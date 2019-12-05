@@ -4,8 +4,8 @@ A PyTorch reimplementation for the paper [Generative Image Inpainting with Conte
 ## Prerequisites
 This code has been tested on Ubuntu 14.04 and the following are the main components that need to be installed:
 - Python3
-- PyTorch 1.0.0
-- torchvision 0.2.0
+- PyTorch 1.0+
+- torchvision 0.2.0+
 - tensorboardX
 - pyyaml
 
