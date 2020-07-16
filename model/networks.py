@@ -285,10 +285,7 @@ class ContextualAttention(nn.Module):
             if self.use_cuda:
                 escape_NaN = escape_NaN.cuda()
             wi = wi[0]  # [L, C, k, k]
-            max_wi = torch.max(torch.sqrt(reduce_sum(torch.pow(wi, 2),
-                                                     axis=[1, 2, 3],
-                                                     keepdim=True)),
-                               escape_NaN)
+            max_wi = torch.sqrt(reduce_sum(torch.pow(wi, 2) + escape_NaN, axis=[1, 2, 3], keepdim=True))
             wi_normed = wi / max_wi
             # xi shape: [1, C, H, W], yi shape: [1, L, H, W]
             xi = same_padding(xi, [self.ksize, self.ksize], [1, 1], [1, 1])  # xi: 1*c*H*W
